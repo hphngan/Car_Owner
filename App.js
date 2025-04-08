@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {View, Button} from "react-native"
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import LoginScreen from "./screens/LoginScreen";
+import ListingScreen from "./screens/ListingScreen";
+import MyListingsScreen from "./screens/MyListingsScreen";
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  const HomeTabs = () =>  {
+    return(
+      <Stack.Navigator >
+        <Stack.Screen name="My Listings" component={MyListingsScreen} />    
+        <Stack.Screen name="Create Listings" component={ListingScreen} />                     
+      </Stack.Navigator>
+    )
+  }
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login Screen" component={LoginScreen} />          
+        <Stack.Screen name="Home" component={HomeTabs} options={{headerShown:false}}/>                 
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+}
