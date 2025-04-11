@@ -21,6 +21,7 @@ const ListingScreen = ({navigation}) => {
         const priceAsNumber = parseFloat(carPrice)
 
         try {
+            // add new listing
             const documentToInsert = {
                 ownerID: auth.currentUser.uid, 
                 carModel: carModel, 
@@ -32,6 +33,8 @@ const ListingScreen = ({navigation}) => {
                 isBooked: false
             }
             await addDoc(collection(db, "Listings"), documentToInsert);
+
+            // reset input field
             setCarModel("");
             setCarLicensePlate("");
             setCarPrice("");

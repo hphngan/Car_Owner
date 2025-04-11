@@ -15,6 +15,7 @@ const MyListingsScreen = ({navigation}) => {
     }, []);*/
 
     useFocusEffect(
+        // update listings after adding new listing
         React.useCallback(() => {
             getListings();
         }, [])
@@ -22,9 +23,12 @@ const MyListingsScreen = ({navigation}) => {
 
     useEffect(()=>{
         navigation.setOptions({
+            // set add new button in the right header 
             headerRight: () => (
               <Button onPress={btnPressed} title="Add New" />
             ),
+
+            // set log out button in the left header
             headerLeft: () => (
                 <Button onPress={logOutPressed} title="Logout" />
             )
@@ -32,9 +36,10 @@ const MyListingsScreen = ({navigation}) => {
      },[navigation])
    
 
-     const logOutPressed = async() => {
+    const logOutPressed = () => {
         try {
-                await signOut(auth)
+                // log out
+                auth.signOut()
                 alert("LogOut Successfully")
                 navigation.navigate("Login Screen")    
             } catch (err) {           
@@ -43,38 +48,44 @@ const MyListingsScreen = ({navigation}) => {
                 console.log(`Error message: ${err.message}`)
                 setErrorMessageLabel(err.message)
             }  
-     }
+    }
 
-     const btnPressed = () => {
+    const btnPressed = () => {
+        // navigate to add new listing screen
         navigation.navigate("Create Listings")    
-     }
+    }
 
     const getListings = async () => {
         try {
+            // get all listings of current user
             const userId = auth.currentUser.uid; 
             const q = query(collection(db, "Listings"), where("ownerID", "==", userId));
             const querySnapshot = await getDocs(q);
 
             const tempListings = [];
+            // save each document to temp array
             for (const listingDoc of querySnapshot.docs) {
                 const listingData = { ...listingDoc.data(), id: listingDoc.id };
-                
+                // if the listing is booked, get booking information
                 if (listingData.isBooked) {
+                    // find booking data based on listing id
                     const bookingQuery = query(collection(db, "Bookings"), where("listingID", "==", listingDoc.id));
                     const bookingSnapshot = await getDocs(bookingQuery);
                     if (!bookingSnapshot.empty) {
                         const bookingData = bookingSnapshot.docs[0].data();
-                        
+                        // get renter name from renterID in booking information
                         const renterName = await getRenter(bookingData.renterID);
                         listingData.booking = {
                             renterName: renterName, 
-                            confirmationCode: bookingData.confirmationCode,
+                            bookingId: bookingData.bookingID,
                             renterId: bookingData.renterID, 
                         };
                     }
                 }
+                // add each listing to temp array
                 tempListings.push(listingData)
             }
+            // save temp array to listings
             setListings([...tempListings])
             setErrorMessage()
             
@@ -86,6 +97,7 @@ const MyListingsScreen = ({navigation}) => {
 
     const getRenter = async (renterId) => {
         try {
+            // find renter name based on renter id
             const userDocSnap = await getDoc(doc(db, "Users", renterId));
             if (userDocSnap.exists()) {
                 return userDocSnap.data().name;
@@ -100,8 +112,11 @@ const MyListingsScreen = ({navigation}) => {
 
     const cancelBooking = async (listingId, renterId) => {
         try {
+            // delete booking of renter
             await deleteDoc(doc(db, "Bookings", renterId));
+            // update isBooked to false in the listing information 
             await updateDoc(doc(db, "Listings", listingId), { isBooked: false });
+            // update listings
             getListings();
             
         } catch (err) {
@@ -120,7 +135,7 @@ const MyListingsScreen = ({navigation}) => {
                 renderItem={({ item }) => (
                     <View style={styles.row}>
                         <Image
-                            style={styles.image}
+                            style={[styles.image, {resizeMode: 'contain'}]}
                             source={{ uri: item.carPhoto }}
                         />
                         <View style={styles.details}>
@@ -130,7 +145,7 @@ const MyListingsScreen = ({navigation}) => {
                             {item.isBooked && item.booking ? (
                                 <View>
                                     <Text style={styles.text}>Booked by: {item.booking.renterName}</Text>
-                                    <Text style={styles.text}>Confirmation Code: {item.booking.confirmationCode}</Text>
+                                    <Text style={styles.text}>Confirmation Code: {item.booking.bookingId}</Text>
                                     <Button onPress={() => cancelBooking(item.id, item.booking.renterId)} color="red" title='Cancel Booking'></Button>
                                     
                                 </View>

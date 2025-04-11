@@ -17,6 +17,7 @@ const LoginScreen = ({navigation}) => {
    const [errorMessageLabel, setErrorMessageLabel] = useState()
 
    useEffect(()=>{
+      // disable left header when log out
         navigation.setOptions({
             headerLeft: () => null
           })
@@ -24,6 +25,7 @@ const LoginScreen = ({navigation}) => {
 
    const loginPressed = async () => {
       try {
+          // sign in to created account
           await signInWithEmailAndPassword(auth, emailFromUI, passwordFromUI)
           //alert("Account created")
           navigation.navigate("Home")    
@@ -36,22 +38,22 @@ const LoginScreen = ({navigation}) => {
    }
 
   return(
-      <View style={styles.container}> 
-           <Text style={styles.heading}>Welcome to Car Owner App!</Text>
-           <Text style={styles.text}>Login</Text>
-           {/* email tb */}
-           <TextInput placeholder="Enter email" onChangeText={setEmailFromUI} value={emailFromUI} style={styles.tb}/>
-        
-           {/* password tb */}
-           <TextInput placeholder="Enter password" onChangeText={setPasswordFromUI} value={passwordFromUI} style={styles.tb}/>
+    <View style={styles.container}> 
+      <Text style={styles.heading}>Welcome to Car Owner App!</Text>
+      <Text style={styles.text}>Login</Text>
+      {/* email tb */}
+      <TextInput placeholder="Enter email" onChangeText={setEmailFromUI} value={emailFromUI} style={styles.tb}/>
+  
+      {/* password tb */}
+      <TextInput placeholder="Enter password" onChangeText={setPasswordFromUI} value={passwordFromUI} style={styles.tb}/>
 
-           {/* button */}
-           <Pressable onPress={loginPressed} style={styles.btn}>
-               <Text style={styles.btnLabel}>Login</Text>
-           </Pressable>
+      {/* button */}
+      <Pressable onPress={loginPressed} style={styles.btn}>
+          <Text style={styles.btnLabel}>Login</Text>
+      </Pressable>
 
-           <Text>{errorMessageLabel}</Text>
-      </View>
+      <Text>{errorMessageLabel}</Text>
+    </View>
   )
 }
 export default LoginScreen
