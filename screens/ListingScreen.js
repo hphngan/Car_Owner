@@ -41,7 +41,7 @@ const ListingScreen = ({navigation}) => {
             setCarPhoto("");
             setCity("");
             setAddress("");
-            alert("listing created")
+            alert("Listing successfully")
             navigation.navigate("My Listings")    
         }
         catch (err){

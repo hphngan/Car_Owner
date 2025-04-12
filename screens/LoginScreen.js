@@ -1,109 +1,118 @@
-import { StyleSheet, Text, View, TextInput, TextView, Switch, Pressable} from 'react-native';
-import {useState, useEffect} from "react"
+import { StyleSheet, Text, View, TextInput, TextView, Switch, Pressable, Alert } from "react-native";
+import { useState } from "react";
 
 // 1. TODO: import the required service  (db, auth, etc) from FirebaseConfig.js
-import {db, auth} from "../firebaseConfig"
+import { auth } from "../firebaseConfig";
 
 // 2. TODO: import the specific functions from the service (import ___ from "firebase/firebase auth)
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
+const LoginScreen = ({ navigation }) => {
+  const [emailFromUI, setEmailFromUI] = useState("");
+  const [passwordFromUI, setPasswordFromUI] = useState("");
+  const [errorMessageLabel, setErrorMessageLabel] = useState("Error messages go here");
 
-const LoginScreen = ({navigation}) => {
+  const loginPressed = async () => {
+    console.log("Attempting to login");
 
-   // form fields
-   const [emailFromUI, setEmailFromUI] = useState("test@test.com")
-   const [passwordFromUI, setPasswordFromUI] = useState("testOwner")
-   const [errorMessageLabel, setErrorMessageLabel] = useState()
+    try {
+      await signInWithEmailAndPassword(auth, emailFromUI, passwordFromUI);
+      checkLoginStatus();
+      navigation.navigate("Home");
+    } catch (err) {
+      Alert.alert("Invalid email or password");
+      setErrorMessageLabel(err.message);
+    }
+  };
 
-   useEffect(()=>{
-      // disable left header when log out
-        navigation.setOptions({
-            headerLeft: () => null
-          })
-    },[navigation])
+  const logoutPressed = async () => {
+    auth.signOut();
+    alert("User is logged out!");
+  };
 
-   const loginPressed = async () => {
-      try {
-          // sign in to created account
-          await signInWithEmailAndPassword(auth, emailFromUI, passwordFromUI)
-          //alert("Account created")
-          navigation.navigate("Home")    
-      } catch (err) {           
-          console.log("Error when doing login")
-          console.log(`Error code: ${err.code}`)
-          console.log(`Error message: ${err.message}`)
-          setErrorMessageLabel(err.message)
-      }  
-   }
+  const checkLoginStatus = () => {
+    // if user is logged in, then this will contain an object
+    // if no one is logged in, then thsi will be null
+    console.log(auth.currentUser);
+  };
 
-  return(
-    <View style={styles.container}> 
-      <Text style={styles.heading}>Welcome to Car Owner App!</Text>
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>Welcome to Turo Car Owner!</Text>
       <Text style={styles.text}>Login</Text>
       {/* email tb */}
-      <TextInput placeholder="Enter email" onChangeText={setEmailFromUI} value={emailFromUI} style={styles.tb}/>
-  
+      <TextInput
+        placeholder="Enter email"
+        autoCapitalize="none"
+        onChangeText={setEmailFromUI}
+        value={emailFromUI}
+        style={styles.tb}
+      />
+
       {/* password tb */}
-      <TextInput placeholder="Enter password" onChangeText={setPasswordFromUI} value={passwordFromUI} style={styles.tb}/>
+      <TextInput
+        placeholder="Enter password"
+        onChangeText={setPasswordFromUI}
+        autoCapitalize="none"
+        secureTextEntry={true}
+        value={passwordFromUI}
+        style={styles.tb}
+      />
 
       {/* button */}
-      <Pressable onPress={loginPressed} style={styles.btn}>
-          <Text style={styles.btnLabel}>Login</Text>
+
+      <Pressable onPress={loginPressed} style={[styles.btn, { backgroundColor: "yellow" }]}>
+        <Text style={styles.btnLabel}>Login</Text>
       </Pressable>
 
-      <Text>{errorMessageLabel}</Text>
+      {errorMessageLabel === null ? <Text>{errorMessageLabel}</Text> : ""}
     </View>
-  )
-}
-export default LoginScreen
-
+  );
+};
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "column",
+    justifyContent: "center",
     flex: 1,
-    backgroundColor: '#fff',    
-    padding:20,
+    backgroundColor: "#fff",
+    padding: 20,
   },
   tb: {
-      width:"100%",  
-      borderRadius:5,
-      backgroundColor:"#efefef",
-      color:"#333",
-      fontWeight:"bold",
-      paddingHorizontal:10,
-      paddingVertical:15,
-      marginVertical:10,      
+    width: "100%",
+    borderRadius: 5,
+    backgroundColor: "#efefef",
+    color: "#333",
+    fontWeight: "bold",
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    marginVertical: 10,
   },
   btn: {
-      borderWidth:1,
-      borderColor:"#141D21",
-      borderRadius:8,
-      paddingVertical:8,
-      marginVertical:8, 
-  },
-  darkBtn: {
-    borderWidth:1,
-    backgroundColor:"#000",    
-    borderRadius:8,
-    paddingVertical:16,
-    marginVertical:8
+    borderWidth: 1,
+    borderColor: "#141D21",
+    borderRadius: 8,
+    paddingVertical: 16,
+    marginVertical: 8,
   },
   btnLabel: {
-      fontSize:16,
-      textAlign:"center"
+    fontSize: 16,
+    textAlign: "center",
   },
   error: {
-       fontSize:16,
-       textAlign:"center",
-       color:"blue"
+    fontSize: 16,
+    textAlign: "center",
+    color: "blue",
   },
-  heading : {
-    fontSize:20,
-    textAlign:"center",
+  heading: {
+    fontSize: 25,
+    fontWeight: 700,
+    textAlign: "center",
   },
-  text : {
-    fontSize:18,
-    marginVertical:8,
-  }
+  text: {
+    fontSize: 18,
+    marginTop: 30,
+    marginBottom: 10,
+  },
 });
