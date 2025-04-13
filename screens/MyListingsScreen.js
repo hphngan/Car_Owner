@@ -2,17 +2,12 @@ import { StyleSheet, Text, View, FlatList, Image, Button, Pressable } from 'reac
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native'
 import { useState, useEffect } from "react";
-import { getAuth, signOut } from "firebase/auth";
 import { db, auth } from "../firebaseConfig";
 import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 
 const MyListingsScreen = ({navigation}) => {
     const [listings, setListings] = useState();
     const [errorMessage, setErrorMessage] = useState(null);
-
-    /*useEffect(() => {
-        getListings();
-    }, []);*/
 
     useFocusEffect(
         // update listings after adding new listing
@@ -33,7 +28,7 @@ const MyListingsScreen = ({navigation}) => {
                 <Button onPress={logOutPressed} title="Logout" />
             )
           })
-     },[navigation])
+    },[navigation])
    
 
     const logOutPressed = () => {

@@ -1,12 +1,7 @@
-import { StyleSheet, Text, View, TextInput, TextView, Switch, Pressable, Button} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable} from 'react-native';
 import {useState} from "react"
-
-// 1. TODO: import the required service  (db, auth, etc) from FirebaseConfig.js
 import {db, auth} from "../firebaseConfig"
-
-// 2. TODO: import the specific functions from the service (import ___ from "firebase/firebase auth)
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, setDoc, addDoc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 
 const ListingScreen = ({navigation}) => {

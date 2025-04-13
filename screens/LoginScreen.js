@@ -1,11 +1,7 @@
-import { StyleSheet, Text, View, TextInput, TextView, Switch, Pressable, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, Pressable, Alert } from "react-native";
 import { useState } from "react";
-
-// 1. TODO: import the required service  (db, auth, etc) from FirebaseConfig.js
 import { auth } from "../firebaseConfig";
-
-// 2. TODO: import the specific functions from the service (import ___ from "firebase/firebase auth)
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginScreen = ({ navigation }) => {
   const [emailFromUI, setEmailFromUI] = useState("");
